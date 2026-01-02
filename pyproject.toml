@@ -1,0 +1,18 @@
+[project]
+name = "hyperstream-kraken"
+version = "1.0.0"
+description = "A song audio and metadata downloading service for Hyperstream."
+authors = [
+    {name = "Anatoly Frolov (anafro)",email = "anatolyfroloff@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "yt-dlp (>=2025.12.8,<2026.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
