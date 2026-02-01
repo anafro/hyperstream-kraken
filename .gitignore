@@ -1,1 +1,7 @@
+.idea/
+.vscode/
 poetry.lock
+downloads/
+__pycache__/
+*.log
+
