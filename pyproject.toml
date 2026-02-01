@@ -9,7 +9,11 @@ license = {text = "MIT"}
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "yt-dlp (>=2025.12.8,<2026.0.0)"
+    "yt-dlp (>=2025.12.8,<2026.0.0)",
+    "pydub (>=0.25.1,<0.26.0)",
+    "soundfile (>=0.13.1,<0.14.0)",
+    "simpleaudio (>=1.0.4,<2.0.0)",
+    "pytubefix (>=10.3.6,<11.0.0)"
 ]
 
 
