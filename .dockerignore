@@ -1,0 +1,9 @@
+/.git/
+/.venv/
+/downloads/
+/src/tests/
+/.dockerignore
+/.editorconfig
+/Dockerfile
+/README.md
+__pycache__/
