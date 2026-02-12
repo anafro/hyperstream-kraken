@@ -14,7 +14,7 @@ class SongDownloadRequestedEvent(RabbitMQEvent):
 
     @override
     def serialize(self) -> bytes:
-        return json.dumps(self).encode(encoding="utf-8")
+        return json.dumps({"query": self.query}).encode("utf-8")
 
     @override
     @staticmethod
