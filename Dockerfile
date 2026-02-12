@@ -5,7 +5,8 @@ RUN apk update && apk add --no-cache \
     build-base \
     alsa-lib-dev \
     libffi-dev \
-    musl-dev
+    musl-dev \
+    ffmpeg
 RUN pip install --no-cache-dir poetry==2.3.2
 
 COPY pyproject.toml poetry.lock* ./
