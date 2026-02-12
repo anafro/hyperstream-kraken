@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from hyperstreamkraken.metadata.song import Song
+from hyperstreamkraken.models.song import Song
 
 
 class SongDownloader(ABC):
