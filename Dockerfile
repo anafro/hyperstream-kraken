@@ -7,6 +7,7 @@ RUN apk add --no-cache \
     libffi-dev \
     musl-dev \
     alsa-lib-dev \
+    libpq-dev \
     ffmpeg
 
 RUN pip install --no-cache-dir poetry==2.3.2
@@ -21,7 +22,8 @@ WORKDIR /app
 
 RUN apk add --no-cache \
     alsa-lib \
-    ffmpeg
+    ffmpeg \
+    libpq
 
 COPY --from=builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
 COPY --from=builder /usr/local/bin /usr/local/bin
