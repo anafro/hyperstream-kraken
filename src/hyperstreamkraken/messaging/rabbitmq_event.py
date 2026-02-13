@@ -105,8 +105,8 @@ class RabbitMQEventBus:
         event_handler: RabbitMQEventHandler[RabbitMQEvent] = event_handlers[routing_key]
 
         try:
-            channel.basic_ack(delivery_tag=delivery_tag)
             event_handler.trigger(event_bus=event_bus, deliver=deliver, message=message)
+            channel.basic_ack(delivery_tag=delivery_tag)
         except Exception:
             ...  # TODO:  Enable logging for event handler exceptions
             channel.basic_nack(delivery_tag=delivery_tag)
