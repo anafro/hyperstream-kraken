@@ -10,6 +10,7 @@ from hyperstreamkraken.messaging.song_download_requested_event_handler import (
     SongDownloadRequestedEventHandler,
 )
 from hyperstreamkraken.models.song import Song
+from hyperstreamkraken.service.up import start_listening_http_up_route_daemon
 from hyperstreamkraken.utils.secrets import get_secret
 from hyperstreamkraken.storage.song_storage import SongStorage
 
@@ -65,6 +66,7 @@ def run_as_microservice(downloader: SongDownloader) -> None:
         )
     )
 
+    start_listening_http_up_route_daemon(44099)
     event_bus.start_listening()
 
 
