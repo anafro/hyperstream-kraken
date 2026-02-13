@@ -124,8 +124,8 @@ class RabbitMQEvent(ABC):
     @abstractmethod
     def serialize(self) -> bytes: ...
 
-    @abstractmethod
     @staticmethod
+    @abstractmethod
     def get_event_name() -> str: ...
 
     def string(self) -> str:
