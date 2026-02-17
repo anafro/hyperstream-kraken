@@ -20,7 +20,7 @@ def search_on_youtube(query: str) -> YoutubeSearch:
         "format": "bestaudio/best",
         "noplaylist": True,
         "quiet": True,
-        "logger": logging.getLogger(),
+        "logger": logging.getLogger(__name__),
     }
 
     with YoutubeDL(yt_dlp_options) as ydl:  # pyright: ignore [reportArgumentType]
