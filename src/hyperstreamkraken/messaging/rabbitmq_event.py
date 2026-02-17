@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import partial
+import logging
 from pika import BlockingConnection, ConnectionParameters, PlainCredentials
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.exchange_type import ExchangeType
@@ -9,6 +10,9 @@ from typing import Any, cast
 import json
 
 from reification import Reified
+
+
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 class RabbitMQEventHandler[E: RabbitMQEvent = RabbitMQEvent](ABC, Reified):
@@ -77,6 +81,7 @@ class RabbitMQEventBus:
             queue=self.queue_name,
             on_message_callback=partial(self.__consume, event_bus=self),
         )
+        logger.info("Listening for RabbitMQ events...")
         self.channel.start_consuming()
 
     def dispatch(self, event: "RabbitMQEvent") -> None:

@@ -14,7 +14,11 @@ from hyperstreamkraken.service.up import start_listening_http_up_route_daemon
 from hyperstreamkraken.utils.secrets import get_secret
 from hyperstreamkraken.storage.song_storage import SongStorage
 
-logger: logging.Logger = logging.Logger(__name__)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
+logger: logging.Logger = logging.getLogger(__name__)
 
 
 def main() -> None:
@@ -26,6 +30,9 @@ def main() -> None:
 
 
 def run_as_microservice(downloader: SongDownloader) -> None:
+    logger.info("Kraken service is starting up")
+    start_listening_http_up_route_daemon(44099)
+
     rabbitmq_host: str = get_secret("RABBITMQ_HOST")
     rabbitmq_username: str = get_secret("RABBITMQ_USER")
     rabbitmq_password: str = get_secret("RABBITMQ_PASS")
@@ -66,7 +73,6 @@ def run_as_microservice(downloader: SongDownloader) -> None:
         )
     )
 
-    start_listening_http_up_route_daemon(44099)
     event_bus.start_listening()
 
 
