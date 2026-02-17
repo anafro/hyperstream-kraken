@@ -23,7 +23,8 @@ WORKDIR /app
 RUN apk add --no-cache \
     alsa-lib \
     ffmpeg \
-    libpq
+    libpq \
+    curl
 
 COPY --from=builder /usr/local/lib/python3.13 /usr/local/lib/python3.13
 COPY --from=builder /usr/local/bin /usr/local/bin
