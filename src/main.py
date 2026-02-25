@@ -2,6 +2,7 @@ import logging
 from argparse import ArgumentParser, Namespace
 from sys import argv
 
+from shhh import get_secret
 from bourgade import EventBus
 
 from hyperstreamkraken.cli import CLIArgs
@@ -12,7 +13,6 @@ from hyperstreamkraken.messaging.song_download_requested_event_handler import (
 )
 from hyperstreamkraken.models.song import Song
 from hyperstreamkraken.service.up import start_listening_http_up_route_daemon
-from hyperstreamkraken.utils.secrets import get_secret
 from hyperstreamkraken.storage.song_storage import SongStorage
 
 logging.basicConfig(

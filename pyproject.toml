@@ -24,6 +24,7 @@ dependencies = [
     "boto3-stubs (>=1.42.46,<2.0.0)",
     "psycopg[binary] (>=3.3.2,<4.0.0)",
     "bourgade (==0.0.0.*)",
+    "shhh (==0.0.0.*)",
 ]
 
 
