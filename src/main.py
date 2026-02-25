@@ -2,10 +2,11 @@ import logging
 from argparse import ArgumentParser, Namespace
 from sys import argv
 
+from bourgade import EventBus
+
 from hyperstreamkraken.cli import CLIArgs
 from hyperstreamkraken.downloading.pytubefix_downloader import PytubefixDownloader
 from hyperstreamkraken.downloading.song_downloader import SongDownloader
-from hyperstreamkraken.messaging.rabbitmq_event import RabbitMQEventBus
 from hyperstreamkraken.messaging.song_download_requested_event_handler import (
     SongDownloadRequestedEventHandler,
 )
@@ -38,7 +39,7 @@ def run_as_microservice(downloader: SongDownloader) -> None:
     rabbitmq_password: str = get_secret("RABBITMQ_PASS")
     rabbitmq_exchange_name: str = get_secret("RABBITMQ_EXCHANGE")
 
-    event_bus = RabbitMQEventBus(
+    event_bus = EventBus(
         host=rabbitmq_host,
         username=rabbitmq_username,
         password=rabbitmq_password,

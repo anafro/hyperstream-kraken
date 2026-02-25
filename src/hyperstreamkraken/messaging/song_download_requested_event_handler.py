@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import override
-from hyperstreamkraken.messaging.rabbitmq_event import RabbitMQEventHandler
+
+from bourgade import EventHandler
 from hyperstreamkraken.messaging.song_download_requested_event import (
     SongDownloadRequestedEvent,
 )
@@ -10,9 +11,7 @@ from hyperstreamkraken.storage.song_storage import SongStorage
 
 
 @dataclass(frozen=True)
-class SongDownloadRequestedEventHandler(
-    RabbitMQEventHandler[SongDownloadRequestedEvent]
-):
+class SongDownloadRequestedEventHandler(EventHandler[SongDownloadRequestedEvent]):
     song_downloader: SongDownloader
     song_storage: SongStorage
 

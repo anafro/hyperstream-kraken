@@ -1,10 +1,10 @@
 from typing import Any, override
-from hyperstreamkraken.messaging.rabbitmq_event import RabbitMQEvent
 from typing import cast
+from bourgade import Event
 import json
 
 
-class SongDownloadRequestedEvent(RabbitMQEvent):
+class SongDownloadRequestedEvent(Event):
     query: str
 
     @override
