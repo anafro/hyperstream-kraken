@@ -79,9 +79,9 @@ class SongFilesStorage:
         if expires_in is None:
             expires_in = timedelta(minutes=30)
 
-        expires_in_millis: int = int(expires_in.total_seconds() * 1000)
+        expires_in_seconds: int = int(expires_in.total_seconds())
         return self.s3.generate_presigned_url(
             "get_object",
             Params={"Key": song_id, "Bucket": self.bucket},
-            ExpiresIn=expires_in_millis,
+            ExpiresIn=expires_in_seconds,
         )
