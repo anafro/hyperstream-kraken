@@ -38,10 +38,12 @@ class SongStorage:
         )
 
     def store(self, song: Song) -> None:
-        pass
+        self.metadatas.store(song_metadata=song.metadata)
+        self.files.upload(song_id=song.metadata.id, song_bytes=song.audio_buffer)
 
-    def remove(self, song_id: Song) -> None:
-        pass
+    def remove(self, song_id: int) -> None:
+        self.metadatas.remove(song_id)
+        self.files.remove(song_id)
 
     def search(
         self, query: str, *, limit: int | None = None, offset: int | None = None
