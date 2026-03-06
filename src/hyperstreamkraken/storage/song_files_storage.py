@@ -1,4 +1,5 @@
 from datetime import timedelta
+from urllib.parse import ParseResult, urlparse
 
 import boto3
 from botocore.exceptions import ClientError
@@ -75,13 +76,16 @@ class SongFilesStorage:
             Key=str(song_id),
         )
 
-    def presign_s3_url(self, song_id: str, expires_in: timedelta | None = None) -> str:
+    def presign_s3_uri(self, song_id: int, expires_in: timedelta | None = None) -> str:
         if expires_in is None:
             expires_in = timedelta(minutes=30)
 
         expires_in_seconds: int = int(expires_in.total_seconds())
-        return self.s3.generate_presigned_url(
+        url: str = self.s3.generate_presigned_url(
             "get_object",
-            Params={"Key": song_id, "Bucket": self.bucket},
+            Params={"Key": str(song_id), "Bucket": self.bucket},
             ExpiresIn=expires_in_seconds,
         )
+
+        url_fragments: ParseResult = urlparse(url)
+        return f"/api/v1/storage/songs{url_fragments.path}?{url_fragments.query}"
