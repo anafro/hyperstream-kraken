@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from argparse import ArgumentParser, Namespace
 from sys import argv
@@ -5,14 +6,19 @@ from sys import argv
 from shhh import get_secret
 from bourgade import EventBus
 
+from hyperstreamkraken.api.http import (
+    start_http_api_server_daemon,
+)
 from hyperstreamkraken.cli import CLIArgs
 from hyperstreamkraken.downloading.pytubefix_downloader import PytubefixDownloader
 from hyperstreamkraken.downloading.song_downloader import SongDownloader
-from hyperstreamkraken.messaging.song_download_requested_event_handler import (
-    SongDownloadRequestedEventHandler,
+from hyperstreamkraken.messaging.song_download_event_handler import (
+    SongDownloadEventHandler,
 )
+from hyperstreamkraken.messaging.song_downloading_event import SongDownloadingEvent
+from hyperstreamkraken.messaging.song_list_event_handler import SongListEventHandler
 from hyperstreamkraken.models.song import Song
-from hyperstreamkraken.service.up import start_listening_http_up_route_daemon
+from hyperstreamkraken.models.song_metadata import SongMetadata
 from hyperstreamkraken.storage.song_storage import SongStorage
 
 logging.basicConfig(
@@ -22,24 +28,34 @@ logging.basicConfig(
 logger: logging.Logger = logging.getLogger(__name__)
 
 
-def main() -> None:
-    downloader = PytubefixDownloader()
+async def on_progress_in_cli(
+    song_metadata: SongMetadata, progress_percent: float
+) -> None:
+    logger.info(
+        "[{}%] Downloading {} - {} [{}]...",
+        song_metadata.author,
+        song_metadata.title,
+        song_metadata.length,
+        progress_percent,
+    )
+
+
+async def main() -> None:
     if len(argv) == 1:
-        run_as_microservice(downloader)
+        await run_as_microservice()
     else:
-        run_as_cli(downloader)
+        await run_as_cli()
 
 
-def run_as_microservice(downloader: SongDownloader) -> None:
+async def run_as_microservice() -> None:
     logger.info("Kraken service is starting up")
-    start_listening_http_up_route_daemon(44099)
 
     rabbitmq_host: str = get_secret("RABBITMQ_HOST")
     rabbitmq_username: str = get_secret("RABBITMQ_USER")
     rabbitmq_password: str = get_secret("RABBITMQ_PASS")
     rabbitmq_exchange_name: str = get_secret("RABBITMQ_EXCHANGE")
 
-    event_bus = EventBus(
+    event_bus: EventBus = await EventBus.create(
         host=rabbitmq_host,
         username=rabbitmq_username,
         password=rabbitmq_password,
@@ -56,7 +72,7 @@ def run_as_microservice(downloader: SongDownloader) -> None:
     pgsql_username: str = get_secret("PGSQL_USERNAME")
     pgsql_password: str = get_secret("PGSQL_PASSWORD")
     pgsql_database: str = get_secret("PGSQL_DATABASE")
-    song_storage: SongStorage = SongStorage(
+    songs: SongStorage = SongStorage(
         s3_host=s3_host,
         s3_access_key=s3_access_key,
         s3_secret_key=s3_secret_key,
@@ -68,16 +84,28 @@ def run_as_microservice(downloader: SongDownloader) -> None:
         pgsql_database=pgsql_database,
     )
 
+    downloader: SongDownloader = PytubefixDownloader()
+
     event_bus.register_handler(
-        SongDownloadRequestedEventHandler(
-            song_downloader=downloader, song_storage=song_storage
+        SongDownloadEventHandler(
+            song_downloader=downloader, song_storage=songs, event_bus=event_bus
         )
     )
 
-    event_bus.start_listening()
+    event_bus.register_handler(
+        SongListEventHandler(
+            song_storage=songs,
+            event_bus=event_bus,
+        )
+    )
+
+    start_http_api_server_daemon(port=44099, songs=songs)
+    await event_bus.start_listening()
 
 
-def run_as_cli(downloader: SongDownloader) -> None:
+async def run_as_cli() -> None:
+    downloader: SongDownloader = PytubefixDownloader()
+
     arg_parser: ArgumentParser = ArgumentParser(
         prog="HyperstreamKraken", description="Downloads songs by a query to a file"
     )
@@ -97,7 +125,7 @@ def run_as_cli(downloader: SongDownloader) -> None:
 
 if __name__ == "__main__":
     try:
-        main()
+        asyncio.run(main=main())
     except KeyboardInterrupt:
         logger.warning("Ctrl+C'd! Goodbye")
     except Exception as exception:
