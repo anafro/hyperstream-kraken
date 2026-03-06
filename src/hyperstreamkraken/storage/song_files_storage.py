@@ -46,21 +46,33 @@ class SongFilesStorage:
             else:
                 raise
 
-    def exists(self, song_id: str) -> bool:
+    def exists(self, song_id: int) -> bool:
         try:
-            _ = self.s3.head_object(Bucket=self.bucket, Key=song_id)
+            _ = self.s3.head_object(Bucket=self.bucket, Key=str(song_id))
             return True
         except ClientError as e:
             if get_error_code(e) == "404":
                 return False
             raise
 
-    def upload(self, song_id: str, song_bytes: bytes) -> None:
+    def upload(self, song_id: int, song_bytes: bytes) -> None:
         if self.exists(song_id):
             return
 
         _ = self.s3.put_object(
-            Body=song_bytes, Bucket=self.bucket, Key=song_id, ContentType="audio/mpeg"
+            Body=song_bytes,
+            Bucket=self.bucket,
+            Key=str(song_id),
+            ContentType="audio/mpeg",
+        )
+
+    def remove(self, song_id: int) -> None:
+        if not self.exists(song_id):
+            return
+
+        _ = self.s3.delete_object(
+            Bucket=self.bucket,
+            Key=str(song_id),
         )
 
     def presign_s3_url(self, song_id: str, expires_in: timedelta | None = None) -> str:
