@@ -1,36 +1,13 @@
-from dataclasses import dataclass
-from enum import Enum
 from typing import final
-
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from sqlalchemy import Integer, String
+from sqlalchemy.orm import MappedColumn, mapped_column
 from hyperstreamkraken.models.base import Base
 
 
 @final
-@dataclass
-class SongSource(Base):
-    __tablename__ = "song_sources"
-    name: Mapped[str]
-    id: Mapped[int] = mapped_column(primary_key=True)
-    songs: Mapped[list["SongMetadata"]] = relationship(
-        "SongMetadata", back_populates="source"
-    )
-
-
-class SongSources(Enum):
-    YOUTUBE = 1
-
-
-@final
-@dataclass
 class SongMetadata(Base):
     __tablename__ = "songs"
-    title: Mapped[str]
-    author: Mapped[str]
-    source: Mapped["SongSource"] = relationship("SongSource", back_populates="songs")
-    source_id: Mapped[int] = mapped_column(
-        ForeignKey("song_sources.id"), primary_key=True
-    )
-    id_from_source: Mapped[str] = mapped_column(primary_key=True)
+    id: MappedColumn[Integer] = mapped_column(Integer, primary_key=True)
+    title: MappedColumn[String] = mapped_column(String, nullable=False)
+    author: MappedColumn[String] = mapped_column(String, nullable=False)
+    length: MappedColumn[Integer] = mapped_column(Integer, nullable=False)
