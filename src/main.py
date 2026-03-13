@@ -16,6 +16,7 @@ from hyperstreamkraken.messaging.song_download_event_handler import (
     SongDownloadEventHandler,
 )
 from hyperstreamkraken.messaging.song_expose_event_handler import SongExposeEventHandler
+from hyperstreamkraken.messaging.song_find_event_handler import SongFindEventHandler
 from hyperstreamkraken.messaging.song_list_event_handler import SongListEventHandler
 from hyperstreamkraken.models.song import Song
 from hyperstreamkraken.models.song_metadata import SongMetadata
@@ -101,6 +102,10 @@ async def run_as_microservice() -> None:
 
     event_bus.register_handler(
         SongExposeEventHandler(song_storage=songs, event_bus=event_bus)
+    )
+
+    event_bus.register_handler(
+        SongFindEventHandler(song_storage=songs, event_bus=event_bus)
     )
 
     start_http_api_server_daemon(port=44099, songs=songs)
