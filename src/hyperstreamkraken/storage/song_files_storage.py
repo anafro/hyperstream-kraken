@@ -76,7 +76,13 @@ class SongFilesStorage:
             Key=str(song_id),
         )
 
-    def presign_s3_uri(self, song_id: int, expires_in: timedelta | None = None) -> str:
+    def presign_s3_uri(
+        self,
+        song_id: int,
+        *,
+        expires_in: timedelta | None = None,
+        external: bool = True,
+    ) -> str:
         if expires_in is None:
             expires_in = timedelta(minutes=30)
 
@@ -88,4 +94,9 @@ class SongFilesStorage:
         )
 
         url_fragments: ParseResult = urlparse(url)
-        return f"/api/v1/storage/songs{url_fragments.path}?{url_fragments.query}"
+        internal_uri: str = f"{url_fragments.path}?{url_fragments.query}"
+
+        if external:
+            return f"/api/v1/storage/songs{internal_uri}"
+        else:
+            return internal_uri

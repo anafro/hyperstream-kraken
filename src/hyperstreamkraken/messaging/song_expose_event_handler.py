@@ -17,7 +17,9 @@ class SongExposeEventHandler(EventHandler[SongExposeEvent]):
     @override
     async def handle(self, event: SongExposeEvent) -> None:
         uri: str = self.song_storage.files.presign_s3_uri(
-            song_id=event.id, expires_in=timedelta(minutes=5)
+            song_id=event.id,
+            expires_in=timedelta(minutes=5),
+            external=event.sid is not None,
         )
         song: SongMetadata | None = self.song_storage.metadatas.find(event.id)
 
